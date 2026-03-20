@@ -552,7 +552,17 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .photo-item img.loaded {
+            opacity: 1;
+        }
 
         .lightbox {
             position: fixed;
@@ -988,18 +998,15 @@
         const el = document.getElementById('instaCount');
         if (!el) return;
         try {
-            const proxy = 'https://corsproxy.io/?';
-            const target = encodeURIComponent('https://instastatistics.com/elasticoarts');
-            const res = await fetch(proxy + target);
-            const text = await res.text();
-            const match = text.match(/"follower_count"\s*:\s*(\d+)/) ||
-                          text.match(/(\d{3,7})\s*<[^>]*>\s*Followers/i) ||
-                          text.match(/>(\d{3,7})<\/\w+>\s*Followers/i);
-            if (match) {
-                el.textContent = Number(match[1]).toLocaleString('de-CH');
+            const res = await fetch('https://instagram-proxy-delta.vercel.app/api/followers');
+            const data = await res.json();
+            if (data && data.followers) {
+                el.textContent = Number(data.followers).toLocaleString('de-CH');
+                return;
             }
+            throw new Error('no data');
         } catch {
-            // Zahl bleibt auf letztem bekanntem Wert (504)
+            // Zahl bleibt auf letztem bekanntem Wert
         }
     }
 
@@ -1062,7 +1069,7 @@
             <div class="section-title">✨ ${escapeHtml(folderName)}</div>
             <div class="photo-grid">`;
         currentImages.forEach((imgUrl, index) => {
-            html += `<div class="photo-item" onclick="openLightbox(${index})"><img src="${imgUrl}" alt="Kunstwerk" loading="lazy"></div>`;
+            html += `<div class="photo-item" onclick="openLightbox(${index})"><img src="${imgUrl}" alt="Kunstwerk" loading="lazy" onload="this.classList.add('loaded')"></div>`;
         });
         html += `</div>`;
         contentArea.innerHTML = html;
@@ -1099,6 +1106,23 @@
         downloadBtn.download = currentImages[currentImageIndex].split('/').pop();
         lightbox.classList.add('active');
         document.addEventListener('keydown', handleKeyPress);
+
+        // Touch Swipe
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        lightbox.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        lightbox.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextImage();
+                else prevImage();
+            }
+        }, { passive: true });
     }
 
     function closeLightbox() {
