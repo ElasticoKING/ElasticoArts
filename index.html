@@ -670,9 +670,99 @@
             .prev-btn { left: 0.5rem; }
             .next-btn { right: 0.5rem; }
             .nav-btn { width: 2rem; height: 2rem; font-size: 1rem; }
-            .loading-gif { width: 240px; height: 240px; }
             .brand { font-size: 1rem; }
             .logo-img { width: 35px; height: 35px; }
+
+            .header {
+                padding: 0.7rem 1rem;
+                gap: 0.5rem;
+            }
+
+            .header-actions {
+                gap: 0.5rem;
+            }
+
+            .storage-info {
+                font-size: 0.65rem;
+                padding: 0.3rem 0.7rem;
+            }
+
+            .instagram-link, .logout-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .folders-container {
+                padding: 1rem;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+                margin-bottom: 1rem;
+            }
+
+            .folder-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+
+            .folder-card {
+                padding: 1.2rem 0.8rem;
+                border-radius: 1rem;
+            }
+
+            .folder-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+            .folder-name { font-size: 0.95rem; }
+            .folder-count { font-size: 0.75rem; }
+
+            .insta-card {
+                padding: 1.2rem 0.8rem;
+                border-radius: 1rem;
+                gap: 0.25rem;
+            }
+
+            .insta-icon { font-size: 1.4rem; }
+            .insta-label { font-size: 0.6rem; letter-spacing: 1px; }
+            .insta-count { font-size: 1.6rem; min-height: 2rem; }
+            .insta-username { font-size: 0.72rem; }
+            .live-badge { font-size: 0.62rem; }
+
+            .photo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 0.7rem;
+            }
+
+            .loading-gif-bg {
+                width: 260px;
+                height: 260px;
+            }
+
+            .loading-text {
+                font-size: 1.1rem;
+                letter-spacing: 4px;
+            }
+
+            .login-box {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .folder-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.6rem;
+            }
+
+            .folder-card, .insta-card {
+                padding: 1rem 0.6rem;
+            }
+
+            .folder-name { font-size: 0.85rem; }
+            .insta-count { font-size: 1.4rem; }
         }
     </style>
 </head>
@@ -898,32 +988,17 @@
         if (!el) return;
         try {
             const proxy = 'https://corsproxy.io/?';
-            const target = encodeURIComponent('https://instastatistics.com/api/v1/followers?username=elasticoarts');
+            const target = encodeURIComponent('https://instastatistics.com/elasticoarts');
             const res = await fetch(proxy + target);
             const text = await res.text();
-            const match = text.match(/"followers"\s*:\s*(\d+)/);
+            const match = text.match(/"follower_count"\s*:\s*(\d+)/) ||
+                          text.match(/(\d{3,7})\s*<[^>]*>\s*Followers/i) ||
+                          text.match(/>(\d{3,7})<\/\w+>\s*Followers/i);
             if (match) {
                 el.textContent = Number(match[1]).toLocaleString('de-CH');
-                return;
             }
-            throw new Error('no match');
         } catch {
-            try {
-                const proxy = 'https://corsproxy.io/?';
-                const target = encodeURIComponent('https://instastatistics.com/elasticoarts');
-                const res = await fetch(proxy + target);
-                const text = await res.text();
-                const match = text.match(/(\d{3,7})\s*<\/?\w*>\s*Followers/i) ||
-                              text.match(/"follower_count"\s*:\s*(\d+)/) ||
-                              text.match(/>(\d{3,7})<[^>]*>\s*Followers/i);
-                if (match) {
-                    el.textContent = Number(match[1]).toLocaleString('de-CH');
-                    return;
-                }
-                throw new Error('no match');
-            } catch {
-                // Zahl bleibt auf letztem bekanntem Wert (504)
-            }
+            // Zahl bleibt auf letztem bekanntem Wert (504)
         }
     }
 
