@@ -13,25 +13,42 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #0a0a1a 0%, #0f0f1f 100%);
+            background: #0a0a1a;
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
         }
 
-        /* ==================== LOADING SCREEN ==================== */
-        .loading-screen {
+        /* ==================== ANIMATED BACKGROUND ==================== */
+        #bgCanvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #050510 0%, #0a0a20 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .loading-screen,
+        .login-container,
+        .app {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ==================== LOADING SCREEN ==================== */
+        .loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
             transition: opacity 0.5s ease, visibility 0.5s ease;
+            overflow: hidden;
         }
 
         .loading-screen.fade-out {
@@ -39,27 +56,44 @@
             visibility: hidden;
         }
 
-        .loader-container {
-            text-align: center;
-            animation: fadeInUp 0.6s ease;
+        .loading-gif-bg {
+            width: 480px;
+            height: 480px;
+            border-radius: 0;
+            object-fit: cover;
+            object-position: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: none;
         }
 
-        .loading-gif {
-            width: 420px;
-            height: 420px;
-            margin: 0 auto 2rem;
-            background-image: url('https://cdn.dribbble.com/userupload/21328517/file/original-48a84740f8b872ce4008dac8b769c6ce.gif');
-            background-size: cover;
-            background-position: center;
-            border-radius: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(106, 17, 255, 0.3);
+        .loading-overlay { display: none; }
+
+        .loader-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .loading-text {
+            font-size: 1.6rem;
+            letter-spacing: 6px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
         }
 
         .loading-dots {
             display: flex;
             justify-content: center;
             gap: 0.8rem;
-            margin-top: 2rem;
+            margin-top: 1.2rem;
         }
 
         .loading-dots span {
@@ -75,36 +109,13 @@
         .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes pulse {
-            0%, 100% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 1;
-                background: linear-gradient(135deg, #00b09b, #96c93d);
-            }
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; background: linear-gradient(135deg, #00b09b, #96c93d); }
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .loading-text {
-            font-size: 1.4rem;
-            letter-spacing: 3px;
-            font-weight: 500;
-            background: linear-gradient(135deg, #fff, #a0a0ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-top: 1rem;
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* ==================== LOGIN SCREEN ==================== */
@@ -114,7 +125,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0a0a1a 0%, #0f0f1f 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -140,7 +150,6 @@
             animation: fadeInUp 0.6s ease;
         }
 
-        /* Login Logo mit Animation */
         .login-logo-wrapper {
             width: 100px;
             height: 100px;
@@ -172,7 +181,6 @@
             object-fit: cover;
         }
 
-        /* Checkmark Animation */
         .checkmark-wrapper {
             width: 100px;
             height: 100px;
@@ -213,29 +221,16 @@
             stroke-dashoffset: 100;
         }
 
-        @keyframes drawCheck {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
+        @keyframes drawCheck { to { stroke-dashoffset: 0; } }
 
-        /* Rotationsanimation für Logo */
         .login-logo.rotate {
             animation: logoRotate 0.5s ease-in-out forwards;
         }
 
         @keyframes logoRotate {
-            0% {
-                transform: rotate(0deg) scale(1);
-            }
-            50% {
-                transform: rotate(180deg) scale(0.8);
-                opacity: 0.5;
-            }
-            100% {
-                transform: rotate(360deg) scale(0);
-                opacity: 0;
-            }
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(0.8); opacity: 0.5; }
+            100% { transform: rotate(360deg) scale(0); opacity: 0; }
         }
 
         .login-box h1 {
@@ -301,10 +296,7 @@
             animation: fadeIn 0.5s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .header {
             background: rgba(10, 10, 20, 0.85);
@@ -383,9 +375,7 @@
             transition: all 0.2s;
         }
 
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .logout-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
         .storage-info {
             background: rgba(0, 0, 0, 0.5);
@@ -433,18 +423,14 @@
         .folder-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
             background: linear-gradient(90deg, #6a11ff, #2575fc, #00b09b);
             transform: translateX(-100%);
             transition: transform 0.5s ease;
         }
 
-        .folder-card:hover::before {
-            transform: translateX(0);
-        }
+        .folder-card:hover::before { transform: translateX(0); }
 
         .folder-card:hover {
             transform: translateY(-8px);
@@ -453,21 +439,9 @@
             box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
         }
 
-        .folder-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .folder-name {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .folder-count {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
+        .folder-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+        .folder-name { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .folder-count { font-size: 0.9rem; color: rgba(255, 255, 255, 0.5); }
 
         .action-bar {
             display: flex;
@@ -488,9 +462,7 @@
             transition: all 0.2s;
         }
 
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
         .photo-grid {
             display: grid;
@@ -514,18 +486,12 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
 
         .lightbox {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.98);
             z-index: 2000;
             display: none;
@@ -534,9 +500,7 @@
             flex-direction: column;
         }
 
-        .lightbox.active {
-            display: flex;
-        }
+        .lightbox.active { display: flex; }
 
         .slider-container {
             position: relative;
@@ -547,12 +511,7 @@
             justify-content: center;
         }
 
-        .slider-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 1rem;
-        }
+        .slider-image { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 1rem; }
 
         .nav-btn {
             position: absolute;
@@ -560,31 +519,24 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
             font-size: 2rem;
-            width: 3rem;
-            height: 3rem;
+            width: 3rem; height: 3rem;
             border-radius: 50%;
             cursor: pointer;
             backdrop-filter: blur(5px);
             transition: all 0.2s;
         }
 
-        .nav-btn:hover {
-            background: rgba(106, 17, 255, 0.6);
-            transform: scale(1.05);
-        }
-
+        .nav-btn:hover { background: rgba(106, 17, 255, 0.6); transform: scale(1.05); }
         .prev-btn { left: -4rem; }
         .next-btn { right: -4rem; }
 
         .close-lightbox {
             position: absolute;
-            top: 1rem;
-            right: 2rem;
+            top: 1rem; right: 2rem;
             background: rgba(106, 17, 255, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 2.5rem; height: 2.5rem;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.2rem;
@@ -638,16 +590,17 @@
 </head>
 <body>
 
+<!-- ANIMATED BACKGROUND -->
+<canvas id="bgCanvas"></canvas>
+
 <!-- LOADING SCREEN -->
 <div class="loading-screen" id="loadingScreen">
     <div class="loader-container">
-        <div class="loading-gif"></div>
-        <div class="loading-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+        <img class="loading-gif-bg" src="https://cdn.dribbble.com/userupload/21328517/file/original-48a84740f8b872ce4008dac8b769c6ce.gif" alt="">
         <div class="loading-text">ELASTICO ARTS</div>
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
     </div>
 </div>
 
@@ -703,70 +656,121 @@
 </div>
 
 <script>
+    // ==================== GEOMETRISCHER HINTERGRUND ====================
+    (function() {
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const shapes = [];
+        const COUNT = 18;
+        const TYPES = [3, 4, 6]; // Dreieck, Viereck, Sechseck
+
+        for (let i = 0; i < COUNT; i++) {
+            shapes.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                size: Math.random() * 80 + 40,
+                sides: TYPES[Math.floor(Math.random() * TYPES.length)],
+                rotation: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.003,
+                vx: (Math.random() - 0.5) * 0.25,
+                vy: (Math.random() - 0.5) * 0.25,
+                alpha: Math.random() * 0.15 + 0.08,
+                color: Math.random() > 0.5 ? '106,17,255' : '37,117,252',
+            });
+        }
+
+        function drawPolygon(ctx, x, y, size, sides, rotation) {
+            ctx.beginPath();
+            for (let i = 0; i < sides; i++) {
+                const angle = rotation + (i * Math.PI * 2) / sides;
+                const px = x + Math.cos(angle) * size;
+                const py = y + Math.sin(angle) * size;
+                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            shapes.forEach(s => {
+                s.x += s.vx;
+                s.y += s.vy;
+                s.rotation += s.rotSpeed;
+
+                if (s.x < -100) s.x = canvas.width + 100;
+                if (s.x > canvas.width + 100) s.x = -100;
+                if (s.y < -100) s.y = canvas.height + 100;
+                if (s.y > canvas.height + 100) s.y = -100;
+
+                drawPolygon(ctx, s.x, s.y, s.size, s.sides, s.rotation);
+                ctx.strokeStyle = `rgba(${s.color},${s.alpha})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    })();
+
     // ==================== PASSWORT ====================
     const CORRECT_PASSWORD = "amine";
-    
+
     // ==================== GITHUB BILDER ====================
     const GITHUB_USER = "ElasticoKING";
     const GITHUB_REPO = "ElasticoArts";
     const IMAGES_PATH = "images";
-    
+
     let foldersData = {};
     let currentFolder = null;
     let currentImages = [];
     let currentImageIndex = 0;
-    
-    // ==================== LOGIN MIT ANIMATION ====================
+
     async function checkPassword() {
         const password = document.getElementById('passwordInput').value;
         const errorMsg = document.getElementById('errorMsg');
-        
+
         if (password === CORRECT_PASSWORD) {
             errorMsg.innerText = '';
-            
-            // Logo und Checkmark Animation
             const loginLogo = document.getElementById('loginLogo');
             const checkmarkWrapper = document.getElementById('checkmarkWrapper');
-            
-            // Logo dreht sich und verschwindet
             loginLogo.classList.add('rotate');
-            
-            // Nach der Drehung den grünen Haken einblenden
             setTimeout(() => {
                 loginLogo.style.display = 'none';
                 checkmarkWrapper.classList.add('active');
             }, 400);
-            
-            // Nach der Animation zum Login Fade-out
             setTimeout(async () => {
                 const loginContainer = document.getElementById('loginContainer');
                 loginContainer.classList.add('fade-out');
-                
                 setTimeout(async () => {
                     loginContainer.style.display = 'none';
                     document.getElementById('app').style.display = 'block';
                     await showFolders();
                 }, 500);
             }, 1000);
-            
         } else {
             errorMsg.innerText = 'Falsches Passwort!';
-            // Kurze Fehler-Animation für das Input-Feld
             const input = document.getElementById('passwordInput');
             input.style.borderColor = '#ff6b6b';
-            setTimeout(() => {
-                input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-            }, 500);
+            setTimeout(() => { input.style.borderColor = 'rgba(255, 255, 255, 0.2)'; }, 500);
         }
     }
-    
+
     async function loadImagesFromGitHub() {
         showToast('📸 Lade Galerie...');
-        
         try {
             const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${IMAGES_PATH}`;
             const response = await fetch(apiUrl);
-            
             if (!response.ok) {
                 if (response.status === 404) {
                     showToast('📁 Erstelle einen "images" Ordner auf GitHub!', true);
@@ -774,17 +778,14 @@
                 }
                 throw new Error('Fehler beim Laden');
             }
-            
             const items = await response.json();
             const folders = {};
-            
             for (const item of items) {
                 if (item.type === 'dir' && item.name !== '.gitkeep') {
                     const folderName = item.name;
                     const folderUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${IMAGES_PATH}/${folderName}`;
                     const folderResponse = await fetch(folderUrl);
                     const folderItems = await folderResponse.json();
-                    
                     const images = [];
                     for (const file of folderItems) {
                         if (file.type === 'file' && /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name)) {
@@ -792,13 +793,9 @@
                             images.push(imageUrl);
                         }
                     }
-                    
-                    if (images.length > 0) {
-                        folders[folderName] = images;
-                    }
+                    if (images.length > 0) folders[folderName] = images;
                 }
             }
-            
             return folders;
         } catch (error) {
             console.error('Fehler:', error);
@@ -806,13 +803,11 @@
             return {};
         }
     }
-    
+
     async function showFolders() {
         currentFolder = null;
         foldersData = await loadImagesFromGitHub();
-        
         const contentArea = document.getElementById('contentArea');
-        
         if (Object.keys(foldersData).length === 0) {
             contentArea.innerHTML = `
                 <div class="folders-container">
@@ -825,21 +820,13 @@
                             <a href="https://www.instagram.com/elasticoarts/" target="_blank" style="color: #6a11ff; text-decoration: none;">📷 Folge mir auf Instagram</a>
                         </p>
                     </div>
-                </div>
-            `;
-            
+                </div>`;
             const storageInfo = document.getElementById('storageInfo');
             if (storageInfo) storageInfo.textContent = `🎨 0 Werke`;
             return;
         }
-        
         let totalImages = 0;
-        let html = `
-            <div class="folders-container">
-                <div class="section-title">🎨 Artworks</div>
-                <div class="folder-grid">
-        `;
-        
+        let html = `<div class="folders-container"><div class="section-title">🎨 Artworks</div><div class="folder-grid">`;
         for (const [folderName, images] of Object.entries(foldersData)) {
             totalImages += images.length;
             html += `
@@ -847,43 +834,31 @@
                     <div class="folder-icon">📁</div>
                     <div class="folder-name">${escapeHtml(folderName)}</div>
                     <div class="folder-count">${images.length} Werke</div>
-                </div>
-            `;
+                </div>`;
         }
-        
         html += `</div></div>`;
         contentArea.innerHTML = html;
-        
         const storageInfo = document.getElementById('storageInfo');
         if (storageInfo) storageInfo.textContent = `🎨 ${totalImages} Werke`;
     }
-    
+
     function openFolder(folderName) {
         currentFolder = folderName;
         currentImages = foldersData[folderName] || [];
-        
         const contentArea = document.getElementById('contentArea');
-        
         let html = `
             <div class="action-bar">
                 <button class="back-btn" onclick="showFolders()">← Zurück</button>
             </div>
             <div class="section-title">✨ ${escapeHtml(folderName)}</div>
-            <div class="photo-grid">
-        `;
-        
+            <div class="photo-grid">`;
         currentImages.forEach((imgUrl, index) => {
-            html += `
-                <div class="photo-item" onclick="openLightbox(${index})">
-                    <img src="${imgUrl}" alt="Kunstwerk" loading="lazy">
-                </div>
-            `;
+            html += `<div class="photo-item" onclick="openLightbox(${index})"><img src="${imgUrl}" alt="Kunstwerk" loading="lazy"></div>`;
         });
-        
         html += `</div>`;
         contentArea.innerHTML = html;
     }
-    
+
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast';
@@ -892,7 +867,7 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
-    
+
     function escapeHtml(str) {
         return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
@@ -901,83 +876,77 @@
             return m;
         });
     }
-    
+
     function openLightbox(index) {
         currentImageIndex = index;
         const lightbox = document.getElementById('lightbox');
         const sliderImage = document.getElementById('sliderImage');
         const imageCounter = document.getElementById('imageCounter');
-        
         sliderImage.src = currentImages[currentImageIndex];
         imageCounter.innerText = `${currentImageIndex + 1} / ${currentImages.length}`;
         lightbox.classList.add('active');
         document.addEventListener('keydown', handleKeyPress);
     }
-    
+
     function closeLightbox() {
         document.getElementById('lightbox').classList.remove('active');
         document.removeEventListener('keydown', handleKeyPress);
     }
-    
+
     function nextImage() {
         if (currentImages.length === 0) return;
         currentImageIndex = (currentImageIndex + 1) % currentImages.length;
         updateSliderImage();
     }
-    
+
     function prevImage() {
         if (currentImages.length === 0) return;
         currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
         updateSliderImage();
     }
-    
+
     function updateSliderImage() {
         const sliderImage = document.getElementById('sliderImage');
         const imageCounter = document.getElementById('imageCounter');
         sliderImage.src = currentImages[currentImageIndex];
         imageCounter.innerText = `${currentImageIndex + 1} / ${currentImages.length}`;
     }
-    
+
     function handleKeyPress(e) {
         if (e.key === 'ArrowLeft') prevImage();
         else if (e.key === 'ArrowRight') nextImage();
         else if (e.key === 'Escape') closeLightbox();
     }
-    
+
     function logout() {
         const app = document.getElementById('app');
         const loginContainer = document.getElementById('loginContainer');
-        
         app.style.display = 'none';
         loginContainer.style.display = 'flex';
         loginContainer.classList.remove('fade-out');
         document.getElementById('passwordInput').value = '';
         document.getElementById('errorMsg').innerText = '';
         currentFolder = null;
-        
-        // Logo zurücksetzen für nächsten Login
         const loginLogo = document.getElementById('loginLogo');
         const checkmarkWrapper = document.getElementById('checkmarkWrapper');
         loginLogo.style.display = 'flex';
         loginLogo.classList.remove('rotate');
         checkmarkWrapper.classList.remove('active');
     }
-    
-    // Loading Screen
+
     setTimeout(() => {
         const loadingScreen = document.getElementById('loadingScreen');
         loadingScreen.classList.add('fade-out');
-        
         setTimeout(() => {
             loadingScreen.style.display = 'none';
             document.getElementById('loginContainer').style.display = 'flex';
         }, 500);
     }, 3000);
-    
+
     document.getElementById('passwordInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPassword();
     });
-    
+
     document.getElementById('loginContainer').style.display = 'none';
     document.getElementById('app').style.display = 'none';
 </script>
