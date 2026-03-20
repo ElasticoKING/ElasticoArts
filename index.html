@@ -567,6 +567,76 @@
             opacity: 1;
         }
 
+        .photo-item {
+            position: relative;
+        }
+
+        .like-btn {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .photo-item:hover .like-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .like-btn.liked {
+            background: rgba(255, 59, 92, 0.3);
+            border: 1px solid rgba(255, 59, 92, 0.5);
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .like-btn:hover {
+            transform: scale(1.15) !important;
+        }
+
+        .like-count {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 3px 8px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .photo-item:hover .like-count,
+        .photo-item .like-count.has-likes {
+            opacity: 1;
+        }
+
+        @keyframes likePopup {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        .like-btn.pop {
+            animation: likePopup 0.3s ease;
+        }
+
         .lightbox {
             position: fixed;
             top: 0; left: 0;
@@ -860,7 +930,7 @@
 <!-- LOADING SCREEN -->
 <div class="loading-screen" id="loadingScreen">
     <div class="loader-container">
-        <img class="loading-gif-bg" src="https://cdn.dribbble.com/userupload/21328517/file/original-48a84740f8b872ce4008dac8b769c6ce.gif" alt="">
+        <img class="loading-gif-bg" src="https://cdn.dribbble.com/userupload/21328517/file/original-48a84740f8b872ce4008dac8b769c6ce.gif" alt="" onerror="this.style.display='none'">
         <div class="loading-text">ELASTICO ARTS</div>
         <div class="loading-dots">
             <span></span><span></span><span></span>
@@ -1144,6 +1214,34 @@
         setInterval(fetchInstagramFollowers, 30000);
     }
 
+    function toggleLike(event, folder, index) {
+        event.stopPropagation();
+        try {
+            const key = `like_${folder}_${index}`;
+            const liked = localStorage.getItem(key) === '1';
+            const count = parseInt(localStorage.getItem(key + '_count') || '0');
+            const btn = event.currentTarget;
+            const countEl = document.getElementById(`lc_${index}`);
+            if (liked) {
+                localStorage.setItem(key, '0');
+                const newCount = Math.max(0, count - 1);
+                localStorage.setItem(key + '_count', newCount);
+                btn.classList.remove('liked');
+                btn.innerHTML = '🤍';
+                if (countEl) { countEl.innerHTML = newCount > 0 ? '❤️ ' + newCount : ''; countEl.classList.toggle('has-likes', newCount > 0); }
+            } else {
+                localStorage.setItem(key, '1');
+                const newCount = count + 1;
+                localStorage.setItem(key + '_count', newCount);
+                btn.classList.add('liked');
+                btn.innerHTML = '❤️';
+                btn.classList.add('pop');
+                setTimeout(() => btn.classList.remove('pop'), 300);
+                if (countEl) { countEl.innerHTML = '❤️ ' + newCount; countEl.classList.add('has-likes'); }
+            }
+        } catch(e) { console.warn('Like error:', e); }
+    }
+
     function openFolder(folderName) {
         currentFolder = folderName;
         currentImages = foldersData[folderName] || [];
@@ -1155,7 +1253,22 @@
             <div class="section-title">✨ ${escapeHtml(folderName)}</div>
             <div class="photo-grid">`;
         currentImages.forEach((imgUrl, index) => {
-            html += `<div class="photo-item" onclick="openLightbox(${index})"><img src="${imgUrl}" alt="Kunstwerk" loading="lazy" onload="this.classList.add('loaded')"></div>`;
+            let liked = false, count = 0;
+            try {
+                const key = `like_${currentFolder}_${index}`;
+                liked = localStorage.getItem(key) === '1';
+                count = parseInt(localStorage.getItem(key + '_count') || '0');
+            } catch(e) {}
+            html += `
+                <div class="photo-item" onclick="openLightbox(${index})">
+                    <img src="${imgUrl}" alt="Kunstwerk" loading="lazy" onload="this.classList.add('loaded')">
+                    <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleLike(event, '${currentFolder}', ${index})" title="Like">
+                        ${liked ? '❤️' : '🤍'}
+                    </button>
+                    <div class="like-count ${count > 0 ? 'has-likes' : ''}" id="lc_${index}">
+                        ${count > 0 ? '❤️ ' + count : ''}
+                    </div>
+                </div>`;
         });
         html += `</div>`;
         contentArea.innerHTML = html;
@@ -1285,7 +1398,7 @@
             loadingScreen.style.display = 'none';
             document.getElementById('loginContainer').style.display = 'flex';
         }, 500);
-    }, 3000);
+    }, 1500);
 
     document.getElementById('passwordInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPassword();
