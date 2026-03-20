@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ElasticoArts - Area</title>
     <style>
         * {
@@ -933,6 +933,7 @@
                 loginContainer.classList.add('fade-out');
                 setTimeout(async () => {
                     loginContainer.style.display = 'none';
+                    window.scrollTo(0, 0);
                     document.getElementById('app').style.display = 'block';
                     await showFolders();
                 }, 500);
