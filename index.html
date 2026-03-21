@@ -1108,7 +1108,8 @@
         const audio = document.getElementById('bgMusic');
         const btn = document.getElementById('musicBtn');
         if (!audio) return;
-        audio.volume = 0.10;
+        const isMobile = window.innerWidth <= 768;
+        audio.volume = isMobile ? 0.04 : 0.10;
         audio.play().then(() => {
             if (btn) { btn.textContent = '🔊'; btn.classList.add('playing'); }
             musicPlaying = true;
@@ -1124,7 +1125,8 @@
             btn.classList.remove('playing');
             musicPlaying = false;
         } else {
-            audio.volume = 0.10;
+            const isMobile = window.innerWidth <= 768;
+            audio.volume = isMobile ? 0.04 : 0.10;
             audio.play().then(() => {
                 btn.textContent = '🔊';
                 btn.classList.add('playing');
